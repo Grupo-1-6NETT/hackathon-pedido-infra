@@ -5,5 +5,5 @@ public class Item : BaseEntity
     public string Descricao { get; set; } = string.Empty;
     public decimal Preco { get; set; }
     public bool Disponivel { get; set; }
-    public string NomeCategoria { get; set; } = string.Empty;
+    public Categoria Categoria { get; set; } = new();
 }
