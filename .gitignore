@@ -52,3 +52,7 @@ CodeCoverage/
 *.VisualState.xml
 TestResult.xml
 nunit-*.xml
+/.vs
+/Pedido.Infra/.vs
+/Pedido.Infra/Consumer/appsettings.Development.json
+/Pedido.Infra/Infrastructure/Migrations
