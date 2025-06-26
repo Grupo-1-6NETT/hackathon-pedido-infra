@@ -29,6 +29,7 @@ public class PedidoItemRepository(AppDbContext context) : IPedidoItemRepository
     public async Task<PedidoItem> UpdateAsync(PedidoItem entity)
     {
         entity.DataAtualizacao = DateTime.Now.ToUniversalTime();
+
         EntitySet.Attach(entity);
         await context.SaveChangesAsync();
         return entity;
