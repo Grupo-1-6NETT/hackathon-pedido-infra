@@ -34,4 +34,26 @@ public class PedidoItemRepository(AppDbContext context) : IPedidoItemRepository
         await context.SaveChangesAsync();
         return entity;
     }
+
+    public async Task<bool> InsertManyAsync(PedidoItem[] entities, Guid pedidoId)
+    {
+        if (entities == null || entities.Length == 0)
+            return false;
+
+        var pedido = await context.Pedidos.FirstOrDefaultAsync(x => x.Id == pedidoId) ?? throw new KeyNotFoundException(nameof(pedidoId));
+
+        foreach (var entity in entities)
+        {
+            var item = await context.Items.FirstOrDefaultAsync(x => x.Id == entity.Item.Id) ?? throw new KeyNotFoundException(nameof(entity.Item));
+
+            entity.DataCriacao = DateTime.Now.ToUniversalTime();
+            entity.DataAtualizacao = DateTime.Now.ToUniversalTime();
+            entity.Pedido = pedido;
+            entity.Item = item;
+        }
+        
+        await EntitySet.AddRangeAsync(entities);
+
+        return await context.SaveChangesAsync() > 0;        
+    }
 }
