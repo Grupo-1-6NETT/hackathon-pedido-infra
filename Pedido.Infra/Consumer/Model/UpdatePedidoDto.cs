@@ -8,6 +8,5 @@ public class UpdatePedidoDto
 {
     public Guid Id { get; set; }
     public string Status { get; set; }
-    public string Entrega { get; set; }
-    public string ClienteCpf { get; set; }
+    public string Entrega { get; set; }    
 }

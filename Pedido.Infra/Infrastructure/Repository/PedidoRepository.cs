@@ -17,12 +17,17 @@ public class PedidoRepository(AppDbContext context) : IPedidoRepository
         return await context.SaveChangesAsync() > 0;
     }
 
-    public async Task<Pedido> InsertAsync(Pedido entity)
+    public async Task<Pedido> InsertAsync(Pedido entity, string clienteCpf)
     {
+        var cliente = context.Clientes.FirstOrDefault(x => x.Cpf == clienteCpf) ?? throw new KeyNotFoundException(nameof(clienteCpf));
+
+        entity.Cliente = cliente;
         entity.DataCriacao = DateTime.Now.ToUniversalTime();
         entity.DataAtualizacao = DateTime.Now.ToUniversalTime();
-        EntitySet.Add(entity);
+
+        await EntitySet.AddAsync(entity);
         await context.SaveChangesAsync();
+        
         return entity;
     }    
 
