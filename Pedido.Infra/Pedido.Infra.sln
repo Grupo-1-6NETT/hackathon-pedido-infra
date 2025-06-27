@@ -5,9 +5,18 @@ VisualStudioVersion = 17.11.35327.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Consumer", "Consumer\Consumer.csproj", "{B609020F-276B-4F2D-B505-49925BF63CF3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", "{24DF0486-A00E-4370-9202-746DAA979079}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "Core\Core.csproj", "{24DF0486-A00E-4370-9202-746DAA979079}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{7B5E1AD0-9B14-448B-B725-0973613B5E92}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{7B5E1AD0-9B14-448B-B725-0973613B5E92}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{51C669CC-9839-45F3-B744-3AE8DDA5C987}"
+	ProjectSection(SolutionItems) = preProject
+		.dockerignore = .dockerignore
+		..\.gitignore = ..\.gitignore
+		docker-compose.yml = docker-compose.yml
+		Dockerfile = Dockerfile
+		..\README.md = ..\README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
