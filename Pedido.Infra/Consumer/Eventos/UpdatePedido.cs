@@ -8,16 +8,16 @@ public class UpdatePedido(IPedidoRepository pedidoRepository) : IConsumer<Update
 {
     public async Task Consume(ConsumeContext<UpdatePedidoDto> context)
     {
-        var dto = context.Message;
+        var msg = context.Message;
 
-        var entity = await pedidoRepository.SelectAsync(dto.Id) ?? new();
+        var dto = new Core.Dto.PedidoDto { Id = msg.Id };
 
-        if(!string.IsNullOrEmpty(dto.Status))
-            entity.Status = (PedidoStatusEnum)Enum.Parse(typeof(PedidoStatusEnum), dto.Status);
+        if (!string.IsNullOrWhiteSpace(msg.Entrega))
+            dto.Entrega = (PedidoEntregaEnum)Enum.Parse(typeof(PedidoEntregaEnum), msg.Entrega);
 
-        if(!string.IsNullOrEmpty(dto.Entrega))
-            entity.Entrega = (PedidoEntregaEnum)Enum.Parse(typeof(PedidoEntregaEnum), dto.Entrega);
+        if(!string.IsNullOrEmpty(msg.Status))
+            dto.Status = (PedidoStatusEnum)Enum.Parse(typeof(PedidoStatusEnum), msg.Status);
 
-        await pedidoRepository.UpdateAsync(entity);
+        await pedidoRepository.UpdateAsync(dto);
     }
 }

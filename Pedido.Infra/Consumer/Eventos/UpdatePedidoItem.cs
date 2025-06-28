@@ -7,11 +7,14 @@ public class UpdatePedidoItem(IPedidoItemRepository pedidoRepository) : IConsume
 {
     public async Task Consume(ConsumeContext<UpdatePedidoItemDto> context)
     {
-        var dto = context.Message;
+        var msg = context.Message;
 
-        var entity = await pedidoRepository.SelectAsync(dto.Id) ?? new();
-        entity.Quantidade = dto.Quantidade;
+        var dto = new Core.Dto.PedidoItemDto
+        {
+            Id = msg.Id,
+            Quantidade = msg.Quantidade
+        };
 
-        await pedidoRepository.UpdateAsync(entity);
+        await pedidoRepository.UpdateAsync(dto);
     }
 }

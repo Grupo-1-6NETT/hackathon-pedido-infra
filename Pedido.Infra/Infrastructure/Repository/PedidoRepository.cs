@@ -1,4 +1,5 @@
-﻿using Core.Entities;
+﻿using Core.Dto;
+using Core.Entities;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,32 +11,42 @@ public class PedidoRepository(AppDbContext context) : IPedidoRepository
 
     public async Task<Pedido?> SelectAsync(Guid id) => await Queryable.FirstOrDefaultAsync(x => x.Id == id);
 
-    public async Task<bool> DeleteAsync(Guid id)
-    {
-        var item = await EntitySet.SingleAsync(x => x.Id == id);
-        EntitySet.Remove(item);
-        return await context.SaveChangesAsync() > 0;
-    }
-
     public async Task<Pedido> InsertAsync(Pedido entity, string clienteCpf)
     {
-        var cliente = context.Clientes.FirstOrDefault(x => x.Cpf == clienteCpf) ?? throw new KeyNotFoundException(nameof(clienteCpf));
+        var cliente = context.Clientes
+            .FirstOrDefault(x => x.Cpf == clienteCpf) 
+            ?? throw new KeyNotFoundException(nameof(clienteCpf));
 
         entity.Cliente = cliente;
         entity.DataCriacao = DateTime.Now.ToUniversalTime();
         entity.DataAtualizacao = DateTime.Now.ToUniversalTime();
 
-        await EntitySet.AddAsync(entity);
+        EntitySet.Add(entity);
+        
         await context.SaveChangesAsync();
         
         return entity;
     }    
 
-    public async Task<Pedido> UpdateAsync(Pedido entity)
+    public async Task<Pedido> UpdateAsync(PedidoDto dto)
     {
-        entity.DataAtualizacao = DateTime.Now.ToUniversalTime();
-        EntitySet.Attach(entity);
+        var current = Queryable
+            .Include(x => x.Cliente)
+            .FirstOrDefault(x => x.Id == dto.Id)
+            ?? throw new KeyNotFoundException(nameof(dto.Id));
+
+        context.Entry(current.Cliente).State = EntityState.Unchanged;
+
+        if(dto.Entrega != null)
+            current.Entrega = dto.Entrega.Value;
+        if(dto.Status != null)
+            current.Status = dto.Status.Value;
+
+        current.DataAtualizacao = DateTime.Now.ToUniversalTime();
+        
+        EntitySet.Update(current);
         await context.SaveChangesAsync();
-        return entity;
+        
+        return current;
     }
 }

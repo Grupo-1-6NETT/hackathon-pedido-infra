@@ -1,4 +1,5 @@
-﻿using Core.Entities;
+﻿using Core.Dto;
+using Core.Entities;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,29 +11,35 @@ public class PedidoItemRepository(AppDbContext context) : IPedidoItemRepository
 
     public async Task<PedidoItem?> SelectAsync(Guid id) => await Queryable.FirstOrDefaultAsync(x => x.Id == id);
 
-    public async Task<bool> DeleteAsync(Guid id)
+    public async Task DeleteAsync(Guid id)
     {
-        var item = await EntitySet.SingleAsync(x => x.Id == id);
-        EntitySet.Remove(item);
-        return await context.SaveChangesAsync() > 0;
-    }
+        var current = Queryable
+            .FirstOrDefault(x => x.Id == id)
+            ?? throw new KeyNotFoundException(nameof(id));
 
-    public async Task<PedidoItem> InsertAsync(PedidoItem entity)
-    {
-        entity.DataCriacao = DateTime.Now.ToUniversalTime();
-        entity.DataAtualizacao = DateTime.Now.ToUniversalTime();
-        EntitySet.Add(entity);
+        context.Entry(current.Item).State = EntityState.Unchanged;
+        context.Entry(current.Pedido).State = EntityState.Unchanged;
+
+        EntitySet.Remove(current);
+
         await context.SaveChangesAsync();
-        return entity;
-    }    
+    }  
 
-    public async Task<PedidoItem> UpdateAsync(PedidoItem entity)
+    public async Task<PedidoItem> UpdateAsync(PedidoItemDto dto)
     {
-        entity.DataAtualizacao = DateTime.Now.ToUniversalTime();
+        var current = Queryable
+            .FirstOrDefault(x => x.Id == dto.Id)
+            ?? throw new KeyNotFoundException(nameof(dto.Id));
 
-        EntitySet.Attach(entity);
+        context.Entry(current.Item).State = EntityState.Unchanged;
+        context.Entry(current.Pedido).State = EntityState.Unchanged;
+
+        current.DataAtualizacao = DateTime.Now.ToUniversalTime();
+        current.Quantidade = dto.Quantidade;
+
+        EntitySet.Update(current);
         await context.SaveChangesAsync();
-        return entity;
+        return current;
     }
 
     public async Task<bool> InsertManyAsync(PedidoItem[] entities, Guid pedidoId)
@@ -40,11 +47,15 @@ public class PedidoItemRepository(AppDbContext context) : IPedidoItemRepository
         if (entities == null || entities.Length == 0)
             return false;
 
-        var pedido = await context.Pedidos.FirstOrDefaultAsync(x => x.Id == pedidoId) ?? throw new KeyNotFoundException(nameof(pedidoId));
+        var pedido = context.Pedidos
+            .FirstOrDefault(x => x.Id == pedidoId) 
+            ?? throw new KeyNotFoundException(nameof(pedidoId));
 
         foreach (var entity in entities)
         {
-            var item = await context.Items.FirstOrDefaultAsync(x => x.Id == entity.Item.Id) ?? throw new KeyNotFoundException(nameof(entity.Item));
+            var item = context.Items
+                .FirstOrDefault(x => x.Id == entity.Item.Id) 
+                ?? throw new KeyNotFoundException(nameof(entity.Item));
 
             entity.DataCriacao = DateTime.Now.ToUniversalTime();
             entity.DataAtualizacao = DateTime.Now.ToUniversalTime();
@@ -52,7 +63,7 @@ public class PedidoItemRepository(AppDbContext context) : IPedidoItemRepository
             entity.Item = item;
         }
         
-        await EntitySet.AddRangeAsync(entities);
+        EntitySet.AddRange(entities);
 
         return await context.SaveChangesAsync() > 0;        
     }
