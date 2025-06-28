@@ -4,20 +4,22 @@ using Infrastructure.Repository;
 using MassTransit;
 
 namespace Consumer.Eventos;
-public class AddPedidoItem(IPedidoItemRepository pedidoRepository) : IConsumer<AddPedidoItemDto>
+public class AddPedidoItem(IPedidoItemRepository repository) : IConsumer<AddPedidoItemDto>
 {
     public Task Consume(ConsumeContext<AddPedidoItemDto> context)
     {
         var dto = context.Message;
 
-        var entity = new PedidoItem
+        var entities = new PedidoItem[] 
         {
-            Item = new Item { Id = dto.ItemId},
-            Pedido = new Pedido { Id = dto.PedidoId },
-            Quantidade = dto.Quantidade
+            new()
+            {
+                Item = new Item { Id = dto.ItemId},                
+                Quantidade = dto.Quantidade
+            }
         };
 
-        pedidoRepository.InsertAsync(entity);
+        repository.InsertManyAsync(entities, dto.PedidoId);
 
         return Task.CompletedTask;
     }

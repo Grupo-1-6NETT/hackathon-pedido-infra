@@ -8,5 +8,4 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<Pedido> Pedidos { get; set; }
     public DbSet<PedidoItem> PedidoItems { get; set; }
     public DbSet<Item> Items { get; set; }
-    public DbSet<Categoria> Categorias { get; set; }
 }

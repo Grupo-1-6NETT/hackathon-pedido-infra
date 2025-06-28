@@ -30,8 +30,7 @@ public static class DependencyInjection
                     h.Password(senha);
                 });
 
-                cfg.ReceiveEndpoint(nameof(AddPedido).ToLower(), e => e.ConfigureConsumer<AddPedido>(context));
-                cfg.ReceiveEndpoint(nameof(DeletePedido).ToLower(), e => e.ConfigureConsumer<DeletePedido>(context));
+                cfg.ReceiveEndpoint(nameof(AddPedido).ToLower(), e => e.ConfigureConsumer<AddPedido>(context));                
                 cfg.ReceiveEndpoint(nameof(UpdatePedido).ToLower(), e => e.ConfigureConsumer<UpdatePedido>(context));
                 
                 cfg.ReceiveEndpoint(nameof(AddPedidoItem).ToLower(), e => e.ConfigureConsumer<AddPedidoItem>(context));
@@ -41,8 +40,7 @@ public static class DependencyInjection
                 cfg.ConfigureEndpoints(context);
             });
 
-            x.AddConsumer<AddPedido>();
-            x.AddConsumer<DeletePedido>();
+            x.AddConsumer<AddPedido>();            
             x.AddConsumer<UpdatePedido>();
 
             x.AddConsumer<AddPedidoItem>();
